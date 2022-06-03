@@ -1,5 +1,6 @@
 using Demo.SR.PolyProject.API.Models;
 using Demo.SR.PolyProject.API.Services;
+using Demo.SR.PolyProject.API.Utilitities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -62,6 +63,8 @@ namespace Demo.SR.PolyProject.API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<ExceptionHandler>();
 
             app.UseEndpoints(endpoints =>
             {

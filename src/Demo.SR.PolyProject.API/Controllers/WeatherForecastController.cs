@@ -1,4 +1,5 @@
 ﻿using Demo.SR.PolyProject.API.Services;
+using Demo.SR.PolyProject.API.Utilitities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,8 @@ namespace Demo.SR.PolyProject.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces("application/json")]
         public async Task<string> Get(string cityName="Kolkata")
-        {            
+        {
+            Trace.TraceMessage(_logger, "Logging from controller");
 
             return await _weatherService.GetWeatherDetailsByCityName(cityName);
         }
