@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Demo.SR.PolyProject.API.Utilitities
+namespace Demo.SR.PolyProject.API.Utilities
 {
     internal static class NameValueCollectionExtensions
     {

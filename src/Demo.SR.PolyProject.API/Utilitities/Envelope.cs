@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Demo.SR.PolyProject.API.Utilitities
+namespace Demo.SR.PolyProject.API.Utilities
 {
     public class Envelope<T>
     {

@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Demo.SR.PolyProject.API.Utilities;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Demo.SR.PolyProject.API.Utilitities
+namespace Demo.SR.PolyProject.API.Middlewares
 {
-    public sealed class ExceptionHandler
+    public sealed class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public ExceptionHandler(RequestDelegate next)
+        public ExceptionHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
         }

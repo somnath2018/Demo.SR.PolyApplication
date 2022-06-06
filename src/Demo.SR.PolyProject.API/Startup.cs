@@ -1,20 +1,16 @@
+using Demo.SR.PolyProject.API.Middlewares;
 using Demo.SR.PolyProject.API.Models;
 using Demo.SR.PolyProject.API.Services;
 using Demo.SR.PolyProject.API.Utilitities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Polly;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Demo.SR.PolyProject.API
 {
@@ -30,16 +26,21 @@ namespace Demo.SR.PolyProject.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+           services.AddControllers();
 
-            services.AddControllers();
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICorrelationIdAccessor, CorrelationIdAccessor>();
             services.Configure<WeatherApiConfig>(Configuration.GetSection("WeatherApi"));
+
+            services.AddTransient<DefaultRequestIdMessageHandler>();
 
             services.AddHttpClient<IWeatherService, WeatherService>(c =>
              {
                  var baseAddress = Configuration.GetSection("WeatherApi:BaseUrl")?.Value;
 
                  c.BaseAddress = new Uri(baseAddress);
-             }).AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,retryAttempt))))
+             }).AddHttpMessageHandler<DefaultRequestIdMessageHandler>()
+                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,retryAttempt))))
               .AddTransientHttpErrorPolicy(policy => policy.CircuitBreakerAsync(4, TimeSpan.FromSeconds(4)));
             
             services.AddSwaggerGen(c =>
@@ -64,7 +65,9 @@ namespace Demo.SR.PolyProject.API
 
             app.UseAuthorization();
 
-            app.UseMiddleware<ExceptionHandler>();
+            app.UseMiddleware<CorrelationIdHeaderEnricherMiddleware>();
+
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
